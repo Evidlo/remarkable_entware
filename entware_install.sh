@@ -4,10 +4,15 @@ echo "Info: Checking for prerequisites and creating folders..."
 
 if [ -d /opt ]
 then
-    echo "Warning: Folder /opt exists!"
+    echo "Error: Folder /opt exists! Quitting..."
+    exit
 else
     mkdir /opt
+    # mount /opt in /home for more storage space
+    mount --bind /home/root/.entware /opt
 fi
+
+
 for folder in bin etc/init.d lib/opkg sbin share tmp usr var/log var/lock var/run
 do
   if [ -d "/opt/$folder" ]
@@ -73,13 +78,16 @@ if [ -f /etc/localtime ]
 then
     ln -sf /etc/localtime /opt/etc/localtime
 fi
-# Upgrading to Entware
-opkg update
-opkg upgrade
 
+# Upgrading to Entware
+/opt/bin/opkg update
+/opt/bin/opkg upgrade
+
+# create systemd mount unit to mount over /opt on reboot
+cp opt.mount /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable opt.mount
 
 echo "Info: Congratulations!"
-echo "Info: If there are no errors above then Entware-ng was successfully initialized."
+echo "Info: If there are no errors above then Entware has been installed."
 echo "Info: Add /opt/bin & /opt/sbin to your PATH variable"
-echo "Info: Add '/opt/etc/init.d/rc.unslung start' to startup script for Entware-ng services to start"
-echo "Info: Found a Bug? Please report at https://github.com/Entware-ng/Entware-ng/issues"
