@@ -9,6 +9,7 @@ then
 else
     mkdir /opt
     # mount /opt in /home for more storage space
+    mkdir -p /home/root/.entware
     mount --bind /home/root/.entware /opt
 fi
 
@@ -84,6 +85,7 @@ fi
 /opt/bin/opkg upgrade
 
 # create systemd mount unit to mount over /opt on reboot
+cd /home/root
 cp opt.mount /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable opt.mount
