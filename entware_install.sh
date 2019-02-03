@@ -85,8 +85,8 @@ fi
 /opt/bin/opkg upgrade
 
 # create systemd mount unit to mount over /opt on reboot
-cd /home/root
-cp opt.mount /etc/systemd/system/
+parent_dir=$(dirname $0)
+cp $parent_dir/opt.mount /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable opt.mount
 
