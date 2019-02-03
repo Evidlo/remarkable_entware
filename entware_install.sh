@@ -8,9 +8,15 @@ then
     exit
 else
     mkdir /opt
-    # mount /opt in /home for more storage space
-    mkdir -p /home/root/.entware
-    mount --bind /home/root/.entware /opt
+
+    if [ -d /home/root/.entware ]
+    then
+        echo "Error: Folder /home/root/.entware exists! Quitting..."
+        exit
+    else
+        # mount /opt in /home for more storage space
+        mkdir -p /home/root/.entware
+        mount --bind /home/root/.entware /opt
 fi
 
 
