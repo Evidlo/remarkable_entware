@@ -1,6 +1,6 @@
 # reMarkable Entware
 
-[Entware](https://github.com/Entware/Entware) package manager and software repo for the reMarkable tablet.
+This is a modified installer for [Entware](https://github.com/Entware/Entware), a lightweight package manager and software repo for embedded devices.
 
 See a list of available packages [here](http://bin.entware.net/armv7sf-k2.6/).
 
@@ -19,4 +19,6 @@ All entware data is located in `/opt` (which actually points to `/home/root/.ent
 
 ``` bash
 opkg install git
+opkg search '*top*'  # search package names
+opkg find '*top*'    # search package names and descriptions
 ```
