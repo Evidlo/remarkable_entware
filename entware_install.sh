@@ -17,6 +17,7 @@ else
         # mount /opt in /home for more storage space
         mkdir -p /home/root/.entware
         mount --bind /home/root/.entware /opt
+    fi
 fi
 
 
