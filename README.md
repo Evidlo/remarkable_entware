@@ -21,3 +21,12 @@ All entware data is located in `/opt` (which actually points to `/home/root/.ent
 opkg install git
 opkg find '*top*'    # search package names and descriptions
 ```
+
+# After a reMarkable update
+
+reMarkable updates generally wipe out everything outside of /home/root.  While Entware remains intact in `/home/root/.entware`, the mount has to be recreated with `entware_reenable.sh`.
+
+``` bash
+scp entware_reenable.sh root@10.11.99.1
+ssh root@10.11.99.1 ./entware_reenable.sh
+```
