@@ -141,14 +141,13 @@ ln -s ld-2.27.so $DLOADER
 ln -s libc-2.27.so libc.so.6
 ln -s libpthread-2.27.so libpthread.so.0
 
-echo "Info: Basic packages installation..."
-/opt/bin/opkg update
-/opt/bin/opkg install entware-opt
 echo "INFO: Adding repo for reMarkable software"
 echo 'src/gz toltec https://toltec.delab.re/stable' >> /opt/etc/opkg.conf
+
+sed -i 's|http://|https://|g' /opt/etc/opkg.conf
+echo "Info: Basic packages installation..."
 /opt/bin/opkg update
-echo "INFO: Install wget (onboard wget is fairly old)"
-/opt/bin/opkg install wget ca-certificates
+/opt/bin/opkg install entware-opt wget ca-certificates
 
 # No more needed
 rm /home/root/.wget_bin -rf
