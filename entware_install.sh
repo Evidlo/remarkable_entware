@@ -23,6 +23,11 @@ cleanup() {
     then
         rm /etc/systemd/system/opt.mount
     fi
+
+    if [ -e /home/root/.wget_bin ]
+    then
+        rm /home/root/.wget_bin -rf
+    fi
 }
 trap cleanup ERR
 
@@ -46,6 +51,45 @@ else
         mkdir -p /home/root/.entware
         mount --bind /home/root/.entware /opt
     fi
+fi
+
+if [ ! -d /home/root/.wget_bin ]
+then
+    # Bootstrap a current version of wget
+    WGET_BINARIES_PATH='http://static.cosmos-ink.net/remarkable/artifacts'
+    WGET_BINARIES_FILENAME='wget-remarkable-pipeline_job245_wget1.20.3.zip'
+    WGET_BINARIES_SHA256='84185a5934e34e25794d439c78dc9f1590e4df12fbf369236f6a8749bf14d67f'
+
+    # Download and compare to hash
+    wget "$WGET_BINARIES_PATH/$WGET_BINARIES_FILENAME" -O "/home/root/$WGET_BINARIES_FILENAME"
+    if ! echo "$WGET_BINARIES_SHA256  /home/root/$WGET_BINARIES_FILENAME" | sha256sum -c -
+    then
+        echo "FATAL: Invalid hash" >&2
+        exit 1
+    fi
+
+    # Ensure to /home/root/.wget_bin exists and is empty
+    if [ -d /home/root/.wget_bin ]
+    then
+        rm -rf /home/root/.wget_bin/*
+    else
+        mkdir /home/root/.wget_bin
+    fi
+    # Unzip to /home/root/.wget_bin and remove downloaded file
+    unzip "/home/root/$WGET_BINARIES_FILENAME" -d /home/root/.wget_bin -q
+    rm "/home/root/$WGET_BINARIES_FILENAME"
+
+    cat > /home/root/.wget_bin/wget <<EOF
+#!/bin/sh
+LD_LIBRARY_PATH="/home/root/.wget_bin/dist" /home/root/.wget_bin/dist/wget \$@
+EOF
+    chmod +x /home/root/.wget_bin/wget
+
+    # Optional env file
+    #echo 'PATH="/home/root/.wget_bin/dist:$PATH' > "$WGET_DEST_DIR/env"
+    #chmod +x "$WGET_DEST_DIR/env"
+
+    PATH="/home/root/.wget_bin:$PATH"
 fi
 
 # create systemd mount unit to mount over /opt on reboot
@@ -83,7 +127,7 @@ done
 
 echo "Info: Opkg package manager deployment..."
 DLOADER="ld-linux.so.3"
-URL=http://bin.entware.net/armv7sf-k3.2/installer
+URL=https://bin.entware.net/armv7sf-k3.2/installer
 wget $URL/opkg -O /opt/bin/opkg
 chmod 755 /opt/bin/opkg
 wget $URL/opkg.conf -O /opt/etc/opkg.conf
@@ -100,6 +144,14 @@ ln -s libpthread-2.27.so libpthread.so.0
 echo "Info: Basic packages installation..."
 /opt/bin/opkg update
 /opt/bin/opkg install entware-opt
+echo "INFO: Adding repo for reMarkable software"
+echo 'src/gz toltec https://toltec.delab.re/stable' >> /opt/etc/opkg.conf
+/opt/bin/opkg update
+echo "INFO: Install wget (onboard wget is fairly old)"
+/opt/bin/opkg install wget
+
+# No more needed
+rm /home/root/.wget_bin -rf
 
 # Fix for multiuser environment
 chmod 777 /opt/tmp
@@ -145,4 +197,4 @@ fi
 echo ""
 echo "Info: Congratulations! Entware has been installed."
 echo "Info: Add /opt/bin & /opt/sbin to your PATH by executing"
-echo 'ssh root@10.11.99.1 echo '\\\'\''PATH=$PATH:/opt/bin:/opt/sbin'\'\\\'\'' >> ~/.bashrc'\'
+echo 'ssh root@10.11.99.1 echo '\\\'\''PATH=/opt/bin:/opt/sbin:$PATH'\'\\\'\'' >> ~/.bashrc'\'
