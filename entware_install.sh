@@ -148,7 +148,7 @@ echo "INFO: Adding repo for reMarkable software"
 echo 'src/gz toltec https://toltec.delab.re/stable' >> /opt/etc/opkg.conf
 /opt/bin/opkg update
 echo "INFO: Install wget (onboard wget is fairly old)"
-/opt/bin/opkg install wget
+/opt/bin/opkg install wget ca-certificates
 
 # No more needed
 rm /home/root/.wget_bin -rf
