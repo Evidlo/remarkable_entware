@@ -83,12 +83,8 @@ then
 #!/bin/sh
 LD_LIBRARY_PATH="/home/root/.wget_bin/dist" /home/root/.wget_bin/dist/wget \$@
 EOF
+
     chmod +x /home/root/.wget_bin/wget
-
-    # Optional env file
-    #echo 'PATH="/home/root/.wget_bin/dist:$PATH' > "$WGET_DEST_DIR/env"
-    #chmod +x "$WGET_DEST_DIR/env"
-
     PATH="/home/root/.wget_bin:$PATH"
 fi
 
