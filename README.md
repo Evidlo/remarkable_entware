@@ -9,6 +9,7 @@ See a list of available packages [here](http://bin.entware.net/armv7sf-k3.2/).
 Connect your device to the internet before executing.
 
 ``` bash
+git clone http://github.com/evidlo/remarkable_entware && cd remarkable_entware
 scp entware_install.sh root@10.11.99.1:
 ssh root@10.11.99.1 ./entware_install.sh
 ```
