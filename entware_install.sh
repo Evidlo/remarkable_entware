@@ -85,7 +85,11 @@ LD_LIBRARY_PATH="/home/root/.wget_bin/dist" /home/root/.wget_bin/dist/wget \$@
 EOF
 
     chmod +x /home/root/.wget_bin/wget
-    PATH="/home/root/.wget_bin:$PATH"
+fi
+
+# Ensure this binary is used
+if [ `which wget` != '/home/root/.wget_bin/wget' ]; then
+  PATH="/home/root/.wget_bin:$PATH"
 fi
 
 # create systemd mount unit to mount over /opt on reboot
