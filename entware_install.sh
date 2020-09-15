@@ -39,12 +39,12 @@ echo "Info: Checking for prerequisites and creating folders..."
 if [ -d /opt ]
 then
     echo "Error: Folder /opt exists! Quitting..."
-    exit
+    exit 1
 else
     if [ -d /home/root/.entware ]
     then
         echo "Error: Folder /home/root/.entware exists! Quitting..."
-        exit
+        exit 1
     else
         mkdir /opt
         # mount /opt in /home for more storage space
