@@ -24,9 +24,9 @@ cleanup() {
         rm /etc/systemd/system/opt.mount
     fi
 
-    if [ -e /home/root/.wget_bin ]
+    if [ -e /home/root/.cache/wget_bin ]
     then
-        rm /home/root/.wget_bin -rf
+        rm /home/root/.cache/wget_bin -rf
     fi
 }
 trap cleanup ERR
@@ -53,7 +53,7 @@ else
     fi
 fi
 
-if [ ! -d /home/root/.wget_bin ]
+if [ ! -d /home/root/.cache/wget_bin ]
 then
     # Bootstrap a current version of wget
     WGET_BINARIES_PATH='http://static.cosmos-ink.net/remarkable/artifacts'
@@ -68,28 +68,28 @@ then
         exit 1
     fi
 
-    # Ensure to /home/root/.wget_bin exists and is empty
-    if [ -d /home/root/.wget_bin ]
+    # Ensure to /home/root/.cache/wget_bin exists and is empty
+    if [ -d /home/root/.cache/wget_bin ]
     then
-        rm -rf /home/root/.wget_bin/*
+        rm -rf /home/root/.cache/wget_bin/*
     else
-        mkdir /home/root/.wget_bin
+        mkdir -p /home/root/.cache/wget_bin
     fi
-    # Unzip to /home/root/.wget_bin and remove downloaded file
-    unzip "/home/root/$WGET_BINARIES_FILENAME" -d /home/root/.wget_bin -q
+    # Unzip to /home/root/.cache/wget_bin and remove downloaded file
+    unzip "/home/root/$WGET_BINARIES_FILENAME" -d /home/root/.cache/wget_bin -q
     rm "/home/root/$WGET_BINARIES_FILENAME"
 
-    cat > /home/root/.wget_bin/wget <<EOF
+    cat > /home/root/.cache/wget_bin/wget <<EOF
 #!/bin/sh
-LD_LIBRARY_PATH="/home/root/.wget_bin/dist" /home/root/.wget_bin/dist/wget \$@
+LD_LIBRARY_PATH="/home/root/.cache/wget_bin/dist" /home/root/.cache/wget_bin/dist/wget \$@
 EOF
 
-    chmod +x /home/root/.wget_bin/wget
+    chmod +x /home/root/.cache/wget_bin/wget
 fi
 
 # Ensure this binary is used
-if [ `which wget` != '/home/root/.wget_bin/wget' ]; then
-  PATH="/home/root/.wget_bin:$PATH"
+if [ `which wget` != '/home/root/.cache/wget_bin/wget' ]; then
+  PATH="/home/root/.cache/wget_bin:$PATH"
 fi
 
 # create systemd mount unit to mount over /opt on reboot
@@ -150,7 +150,7 @@ echo "Info: Basic packages installation..."
 /opt/bin/opkg install entware-opt wget ca-certificates
 
 # No more needed
-rm /home/root/.wget_bin -rf
+rm /home/root/.cache/wget_bin -rf
 
 # Fix for multiuser environment
 chmod 777 /opt/tmp
