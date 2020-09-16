@@ -149,9 +149,6 @@ echo "Info: Basic packages installation..."
 /opt/bin/opkg update
 /opt/bin/opkg install entware-opt wget ca-certificates
 
-# No more needed
-rm /home/root/.cache/wget_bin -rf
-
 # Fix for multiuser environment
 chmod 777 /opt/tmp
 
