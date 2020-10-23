@@ -23,11 +23,6 @@ cleanup() {
     then
         rm /etc/systemd/system/opt.mount
     fi
-
-    if [ -e /home/root/.cache/wget_bin ]
-    then
-        rm /home/root/.cache/wget_bin -rf
-    fi
 }
 trap cleanup ERR
 
@@ -51,45 +46,6 @@ else
         mkdir -p /home/root/.entware
         mount --bind /home/root/.entware /opt
     fi
-fi
-
-if [ ! -d /home/root/.cache/wget_bin ]
-then
-    # Bootstrap a current version of wget
-    WGET_BINARIES_PATH='http://github.com/LinusCDE/wget-remarkable-pipeline/releases/download/job254'
-    WGET_BINARIES_FILENAME='wget-remarkable-pipeline_job245_wget1.20.3.zip'
-    WGET_BINARIES_SHA256='84185a5934e34e25794d439c78dc9f1590e4df12fbf369236f6a8749bf14d67f'
-
-    # Download and compare to hash
-    wget "$WGET_BINARIES_PATH/$WGET_BINARIES_FILENAME" -O "/home/root/$WGET_BINARIES_FILENAME"
-    if ! echo "$WGET_BINARIES_SHA256  /home/root/$WGET_BINARIES_FILENAME" | sha256sum -c -
-    then
-        echo "FATAL: Invalid hash" >&2
-        exit 1
-    fi
-
-    # Ensure to /home/root/.cache/wget_bin exists and is empty
-    if [ -d /home/root/.cache/wget_bin ]
-    then
-        rm -rf /home/root/.cache/wget_bin/*
-    else
-        mkdir -p /home/root/.cache/wget_bin
-    fi
-    # Unzip to /home/root/.cache/wget_bin and remove downloaded file
-    unzip "/home/root/$WGET_BINARIES_FILENAME" -d /home/root/.cache/wget_bin -q
-    rm "/home/root/$WGET_BINARIES_FILENAME"
-
-    cat > /home/root/.cache/wget_bin/wget <<EOF
-#!/bin/sh
-LD_LIBRARY_PATH="/home/root/.cache/wget_bin/dist" /home/root/.cache/wget_bin/dist/wget \$@
-EOF
-
-    chmod +x /home/root/.cache/wget_bin/wget
-fi
-
-# Ensure this binary is used
-if [ `which wget` != '/home/root/.cache/wget_bin/wget' ]; then
-  PATH="/home/root/.cache/wget_bin:$PATH"
 fi
 
 # create systemd mount unit to mount over /opt on reboot
@@ -127,7 +83,7 @@ done
 
 echo "Info: Opkg package manager deployment..."
 DLOADER="ld-linux.so.3"
-URL=https://bin.entware.net/armv7sf-k3.2/installer
+URL=http://bin.entware.net/armv7sf-k3.2/installer
 wget $URL/opkg -O /opt/bin/opkg
 chmod 755 /opt/bin/opkg
 wget $URL/opkg.conf -O /opt/etc/opkg.conf
@@ -135,19 +91,30 @@ wget $URL/ld-2.27.so -O /opt/lib/ld-2.27.so
 wget $URL/libc-2.27.so -O /opt/lib/libc-2.27.so
 wget $URL/libgcc_s.so.1 -O /opt/lib/libgcc_s.so.1
 wget $URL/libpthread-2.27.so -O /opt/lib/libpthread-2.27.so
+
+# validate integrity of downloaded files
+precomputed_hash="c965366080b8d2004cde8e34ebb9f910  -"
+hash=$(cat /opt/bin/* /opt/etc/* /opt/lib/* | md5sum)
+if [ "$hash" = "$precomputed_hash" ]
+then
+    echo pass
+else
+    echo "Computed hash did not match."
+    exit 1
+fi
+
 cd /opt/lib
 chmod 755 ld-2.27.so
 ln -s ld-2.27.so $DLOADER
 ln -s libc-2.27.so libc.so.6
 ln -s libpthread-2.27.so libpthread.so.0
 
-echo "INFO: Adding repo for reMarkable software"
 echo 'src/gz toltec https://toltec.delab.re/stable' >> /opt/etc/opkg.conf
 
-sed -i 's|http://|https://|g' /opt/etc/opkg.conf
-echo "Info: Basic packages installation..."
 /opt/bin/opkg update
 /opt/bin/opkg install entware-opt wget ca-certificates
+
+sed -i 's|http://|https://|g' /opt/etc/opkg.conf
 
 # Fix for multiuser environment
 chmod 777 /opt/tmp
