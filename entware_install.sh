@@ -34,12 +34,12 @@ echo "Info: Checking for prerequisites and creating folders..."
 if [ -d /opt ]
 then
     echo "Error: Folder /opt exists! Quitting..."
-    exit
+    exit 1
 else
     if [ -d /home/root/.entware ]
     then
         echo "Error: Folder /home/root/.entware exists! Quitting..."
-        exit
+        exit 1
     else
         mkdir /opt
         # mount /opt in /home for more storage space
@@ -91,15 +91,30 @@ wget $URL/ld-2.27.so -O /opt/lib/ld-2.27.so
 wget $URL/libc-2.27.so -O /opt/lib/libc-2.27.so
 wget $URL/libgcc_s.so.1 -O /opt/lib/libgcc_s.so.1
 wget $URL/libpthread-2.27.so -O /opt/lib/libpthread-2.27.so
+
+# validate integrity of downloaded files
+precomputed_hash="c965366080b8d2004cde8e34ebb9f910  -"
+hash=$(cat /opt/bin/* /opt/etc/* /opt/lib/* | md5sum)
+if [ "$hash" = "$precomputed_hash" ]
+then
+    echo pass
+else
+    echo "Computed hash did not match."
+    exit 1
+fi
+
 cd /opt/lib
 chmod 755 ld-2.27.so
 ln -s ld-2.27.so $DLOADER
 ln -s libc-2.27.so libc.so.6
 ln -s libpthread-2.27.so libpthread.so.0
 
-echo "Info: Basic packages installation..."
+echo 'src/gz toltec https://toltec.delab.re/stable' >> /opt/etc/opkg.conf
+
 /opt/bin/opkg update
-/opt/bin/opkg install entware-opt
+/opt/bin/opkg install entware-opt wget ca-certificates
+
+sed -i 's|http://|https://|g' /opt/etc/opkg.conf
 
 # Fix for multiuser environment
 chmod 777 /opt/tmp
@@ -145,4 +160,4 @@ fi
 echo ""
 echo "Info: Congratulations! Entware has been installed."
 echo "Info: Add /opt/bin & /opt/sbin to your PATH by executing"
-echo 'ssh root@10.11.99.1 echo '\\\'\''PATH=$PATH:/opt/bin:/opt/sbin'\'\\\'\'' >> ~/.bashrc'\'
+echo 'ssh root@10.11.99.1 echo '\\\'\''PATH=/opt/bin:/opt/sbin:$PATH'\'\\\'\'' >> ~/.bashrc'\'
