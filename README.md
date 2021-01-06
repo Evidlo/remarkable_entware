@@ -1,8 +1,8 @@
 # reMarkable Entware
 
-This is a modified installer for [Entware](https://github.com/Entware/Entware), a lightweight package manager and software repo for embedded devices.
+This is a modified installer for [Entware](https://github.com/Entware/Entware), a lightweight package manager and software repo for embedded devices.  Includes [Toltec](https://github.com/toltec-dev/toltec)
 
-See a list of available packages [here](http://bin.entware.net/armv7sf-k3.2/).
+See a list of available packages [here](http://bin.entware.net/armv7sf-k3.2/) and [here](https://toltec-dev.org/stable/).
 
 ### Installation
 
