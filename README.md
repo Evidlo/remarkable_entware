@@ -1,17 +1,17 @@
 # reMarkable Entware
 
-This is a modified installer for [Entware](https://github.com/Entware/Entware), a lightweight package manager and software repo for embedded devices.  Includes [Toltec](https://github.com/toltec-dev/toltec)
+This is a modified installer for [Entware](https://github.com/Entware/Entware), a lightweight package manager and software repo for embedded devices.  Includes [Toltec](https://github.com/toltec-dev/toltec).
 
 See a list of available packages [here](http://bin.entware.net/armv7sf-k3.2/) and [here](https://toltec-dev.org/stable/).
 
 ### Installation
 
-Connect your device to the internet before executing.
+Connect the reMarkable via USB and make sure it has internet access.
+
+Connect to the reMarkable with [SSH](https://remarkablewiki.com/tech/ssh) and execute
 
 ``` bash
-git clone http://github.com/evidlo/remarkable_entware && cd remarkable_entware
-scp entware_install.sh root@10.11.99.1:
-ssh root@10.11.99.1 ./entware_install.sh
+wget -O - http://raw.githubusercontent.com/Evidlo/remarkable_entware/master/install.sh | sh
 ```
 
 All entware data is located in `/opt` (which actually points to `/home/root/.entware` because of size constraints on the root partition).  Base installation is ~13MB.
@@ -28,8 +28,7 @@ opkg find '*top*'    # search package names and descriptions
 reMarkable updates wipe out everything outside of `/home/root`.  While Entware remains intact in `/home/root/.entware`, the mount over `/opt` has to be recreated with `entware_reenable.sh`.
 
 ``` bash
-scp entware_reenable.sh root@10.11.99.1:
-ssh root@10.11.99.1 ./entware_reenable.sh
+wget -O - http://raw.githubusercontent.com/Evidlo/remarkable_printer/master/reenable.sh | sh
 ```
 
 ### No space left on device
