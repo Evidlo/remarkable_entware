@@ -28,7 +28,7 @@ opkg find '*top*'    # search package names and descriptions
 reMarkable updates wipe out everything outside of `/home/root`.  While Entware remains intact in `/home/root/.entware`, the mount over `/opt` has to be recreated with `entware_reenable.sh`.
 
 ``` bash
-scp entware_reenable.sh root@10.11.99.1
+scp entware_reenable.sh root@10.11.99.1:
 ssh root@10.11.99.1 ./entware_reenable.sh
 ```
 
@@ -36,4 +36,6 @@ ssh root@10.11.99.1 ./entware_reenable.sh
 
 You can clean up logfiles which take up considerable space on the root partition.
 
-    journalctl --vacuum-size=2M
+``` bash
+journalctl --vacuum-size=2M
+```
