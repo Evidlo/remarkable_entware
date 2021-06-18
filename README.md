@@ -28,7 +28,7 @@ opkg find '*top*'    # search package names and descriptions
 reMarkable updates wipe out everything outside of `/home/root`.  While Entware remains intact in `/home/root/.entware`, the mount over `/opt` has to be recreated with `entware_reenable.sh`.
 
 ``` bash
-wget -O - http://raw.githubusercontent.com/Evidlo/remarkable_printer/master/reenable.sh | sh
+wget -O - http://raw.githubusercontent.com/Evidlo/remarkable_entware/master/reenable.sh | sh
 ```
 
 ### No space left on device
