@@ -112,6 +112,9 @@ ln -s libpthread-2.27.so libpthread.so.0
 /opt/bin/opkg update
 /opt/bin/opkg install entware-opt wget wget-ssl ca-certificates
 
+# switch to wget compiled w/ ssl for https
+rm /opt/bin/wget
+ln -s /opt/libexec/wget-ssl /opt/bin/wget
 sed -i 's|http://|https://|g' /opt/etc/opkg.conf
 
 # Fix for multiuser environment
