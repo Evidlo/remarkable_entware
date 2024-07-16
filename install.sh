@@ -111,7 +111,6 @@ then
     echo pass
 else
     echo "Computed hash did not match."
-    rm -rf $HASH_LOCATION
     exit 1
 fi
 
