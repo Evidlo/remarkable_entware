@@ -3,10 +3,17 @@
 # Modified Entware installer from http://bin.entware.net/armv7sf-k3.2/installer/generic.sh
 
 set -e
+
+HASH_LOCATION=/tmp/hash_remarkable_entware
+
 cleanup() {
     echo "Encountered error.  Cleaning up and quitting..."
     # get out of /opt so it can be unmounted
     cd /home/root
+    if [ -d /home/root/.entware ]
+    then
+        rm /home/root/.entware -rf
+    fi
 
     if [ -d /opt ]
     then
@@ -14,9 +21,9 @@ cleanup() {
         rm /opt -rf
     fi
 
-    if [ -d /home/root/.entware ]
+    if [ -d $HASH_LOCATION ]
     then
-        rm /home/root/.entware -rf
+        rm $HASH_LOCATION -rf
     fi
 
     if [ -f /etc/systemd/system/opt.mount ]
@@ -84,7 +91,6 @@ done
 echo "Info: Opkg package manager deployment..."
 DLOADER="ld-linux.so.3"
 URL=http://bin.entware.net/armv7sf-k3.2/installer
-HASH_LOCATION=/tmp/hash_remarkable_entware
 REPO=Evidlo/remarkable_entware
 
 mkdir -p $HASH_LOCATION
