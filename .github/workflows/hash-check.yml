@@ -10,8 +10,8 @@ jobs:
       HASH_LOCATION: /tmp/hash
       URL: http://bin.entware.net/armv7sf-k3.2/installer
     steps:
+      - uses: actions/checkout@v4
       - name: Calculate Hash 
-        uses: actions/checkout@v4
         run: |
           mkdir -p $HASH_LOCATION
           wget $URL/opkg.conf -O $HASH_LOCATION/opkg.conf
