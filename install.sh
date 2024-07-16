@@ -70,7 +70,7 @@ systemctl enable opt.mount
 
 
 # no need to create many folders. entware-opt package creates most
-for folder in bin etc lib/opkg tmp var/lock
+for folder in bin etc lib tmp var/lock
 do
   if [ -d "/opt/$folder" ]
   then
@@ -93,7 +93,7 @@ wget $URL/libgcc_s.so.1 -O /opt/lib/libgcc_s.so.1
 wget $URL/libpthread-2.27.so -O /opt/lib/libpthread-2.27.so
 
 # validate integrity of downloaded files
-precomputed_hash="c965366080b8d2004cde8e34ebb9f910  -"
+precomputed_hash="6b0e8c94b4c3549756c3ae9e144ac1fb  -"
 hash=$(cat /opt/bin/* /opt/etc/* /opt/lib/* | md5sum)
 if [ "$hash" = "$precomputed_hash" ]
 then
@@ -103,6 +103,7 @@ else
     exit 1
 fi
 
+mkdir -p /opt/lib/opkg
 cd /opt/lib
 chmod 755 ld-2.27.so
 ln -s ld-2.27.so $DLOADER
