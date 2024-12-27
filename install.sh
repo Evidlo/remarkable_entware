@@ -3,10 +3,17 @@
 # Modified Entware installer from http://bin.entware.net/armv7sf-k3.2/installer/generic.sh
 
 set -e
+
+HASH_LOCATION=/tmp/hash_remarkable_entware
+
 cleanup() {
     echo "Encountered error.  Cleaning up and quitting..."
     # get out of /opt so it can be unmounted
     cd /home/root
+    if [ -d /home/root/.entware ]
+    then
+        rm /home/root/.entware -rf
+    fi
 
     if [ -d /opt ]
     then
@@ -14,9 +21,9 @@ cleanup() {
         rm /opt -rf
     fi
 
-    if [ -d /home/root/.entware ]
+    if [ -d $HASH_LOCATION ]
     then
-        rm /home/root/.entware -rf
+        rm $HASH_LOCATION -rf
     fi
 
     if [ -f /etc/systemd/system/opt.mount ]
@@ -70,7 +77,7 @@ systemctl enable opt.mount
 
 
 # no need to create many folders. entware-opt package creates most
-for folder in bin etc lib/opkg tmp var/lock
+for folder in bin etc lib tmp var/lock
 do
   if [ -d "/opt/$folder" ]
   then
@@ -84,17 +91,21 @@ done
 echo "Info: Opkg package manager deployment..."
 DLOADER="ld-linux.so.3"
 URL=http://bin.entware.net/armv7sf-k3.2/installer
-wget $URL/opkg -O /opt/bin/opkg
-chmod 755 /opt/bin/opkg
-wget $URL/opkg.conf -O /opt/etc/opkg.conf
-wget $URL/ld-2.27.so -O /opt/lib/ld-2.27.so
-wget $URL/libc-2.27.so -O /opt/lib/libc-2.27.so
-wget $URL/libgcc_s.so.1 -O /opt/lib/libgcc_s.so.1
-wget $URL/libpthread-2.27.so -O /opt/lib/libpthread-2.27.so
+REPO=Evidlo/remarkable_entware
+
+mkdir -p $HASH_LOCATION
+wget $URL/opkg -O $HASH_LOCATION/opkg
+chmod 755 $HASH_LOCATION/opkg
+wget $URL/opkg.conf -O $HASH_LOCATION/opkg.conf
+wget $URL/ld-2.27.so -O $HASH_LOCATION/ld-2.27.so
+wget $URL/libc-2.27.so -O $HASH_LOCATION/libc-2.27.so
+wget $URL/libgcc_s.so.1 -O $HASH_LOCATION/libgcc_s.so.1
+wget $URL/libpthread-2.27.so -O $HASH_LOCATION/libpthread-2.27.so
 
 # validate integrity of downloaded files
-precomputed_hash="c965366080b8d2004cde8e34ebb9f910  -"
-hash=$(cat /opt/bin/* /opt/etc/* /opt/lib/* | md5sum)
+precomputed_hash=$(wget -O - "http://raw.githubusercontent.com/$REPO/master/hash.txt")
+hash=$(cat $HASH_LOCATION/* | md5sum)
+
 if [ "$hash" = "$precomputed_hash" ]
 then
     echo pass
@@ -102,6 +113,15 @@ else
     echo "Computed hash did not match."
     exit 1
 fi
+
+mkdir -p /opt/lib/opkg
+mv $HASH_LOCATION/opkg /opt/bin/
+mv $HASH_LOCATION/opkg.conf /opt/etc/
+mv $HASH_LOCATION/ld-2.27.so /opt/lib/
+mv $HASH_LOCATION/libc-2.27.so /opt/lib/
+mv $HASH_LOCATION/libgcc_s.so.1 /opt/lib/
+mv $HASH_LOCATION/libpthread-2.27.so /opt/lib/
+rm -rf $HASH_LOCATION
 
 cd /opt/lib
 chmod 755 ld-2.27.so
