@@ -40,3 +40,14 @@ You can clean up logfiles which take up considerable space on the root partition
 ``` bash
 journalctl --vacuum-size=2M
 ```
+
+### Uninstallation
+
+``` bash
+umount /opt
+rm -rf /opt
+rm -rf /home/root/.entware
+rm /etc/systemd/system/opt.mount
+systemctl daemon-reload
+systemctl disable opt.mount
+```
