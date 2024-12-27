@@ -2,9 +2,9 @@
 
 This is a modified installer for [Entware](https://github.com/Entware/Entware), a lightweight package manager and software repo for embedded devices.
 
-If you'd like to install reMarkable specific packages, you should install [Toltec](https://github.com/toltec-dev/toltec) instead, which includes the Entware repositories. WARNING: you may softbrick your device when installing Toltec if Toltec does not support your current version.
+If you'd like to install reMarkable specific packages, you should install [Toltec](https://toltec-dev.org) instead, which includes the Entware repositories as well as graphical applications for the reMarkable.
 
-See a list of available packages [here](http://bin.entware.net/armv7sf-k3.2/) and [here](https://toltec-dev.org/stable/).
+See a list of available entware packages here: http://bin.entware.net/armv7sf-k3.2/.
 
 ### Installation
 
